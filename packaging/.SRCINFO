@@ -1,0 +1,20 @@
+pkgbase = muxkit-git
+	pkgdesc = Matroska remuxing tool
+	pkgver = r1.0000000
+	pkgrel = 1
+	url = https://github.com/Logstor/muxkit
+	arch = any
+	license = GPL-3.0-only
+	depends = python
+	depends = ffmpeg
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-hatchling
+	provides = muxkit
+	conflicts = muxkit
+	source = muxkit-git::git+https://github.com/Logstor/muxkit.git
+	sha256sums = SKIP
+
+pkgname = muxkit-git
