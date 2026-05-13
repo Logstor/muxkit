@@ -21,6 +21,7 @@ def determineLanguageFromFilename(filename: str) -> tuple[str, str] | None:
     # Simple heuristic based on common language codes in filenames
     languageMap = {
         'English': ['eng', regex.compile(r'(\.|-)(eng|english)\.', regex.IGNORECASE)],
+        'Danish': ['dan', regex.compile(r'(\.|-)(dan|danish)\.', regex.IGNORECASE)],
         'Spanish': ['spa', regex.compile(r'(\.|-)(spa|spanish)\.', regex.IGNORECASE)],
         'French': ['fra', regex.compile(r'(\.|-)(fra|french)\.', regex.IGNORECASE)],
         'German': ['deu', regex.compile(r'(\.|-)(deu|german)\.', regex.IGNORECASE)],
@@ -28,7 +29,6 @@ def determineLanguageFromFilename(filename: str) -> tuple[str, str] | None:
         'Japanese': ['jpn', regex.compile(r'(\.|-)(jpn|japanese)\.', regex.IGNORECASE)],
         'Chinese': ['chi', regex.compile(r'(\.|-)(chi|chinese)\.', regex.IGNORECASE)],
         'Korean': ['kor', regex.compile(r'(\.|-)(kor|korean)\.', regex.IGNORECASE)],
-        'Danish': ['dan', regex.compile(r'(\.|-)(dan|danish)\.', regex.IGNORECASE)],
         # Add more languages as needed
     }
 
