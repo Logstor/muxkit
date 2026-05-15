@@ -1,8 +1,8 @@
 import subprocess
 from subprocess import Popen
 
-from muxkit.models import Media
-from muxkit.backend import RemuxBackend, FFMpegBackend
+from muxkit.models import Media, RemuxBackend
+from muxkit.backend import FFMpegBackend
 
 class Remuxer:
     """
@@ -61,7 +61,7 @@ class Remuxer:
         :param media: Media object containing video and subtitles to remux.
         :return: List of command arguments for the remuxing tool.
         """
-        return self.__backend.compileCommand(media)
+        return self.__backend.compileMuxCommand(media)
 
     def __runSubprocess(self, command: list[str], logFile = None):
         """
