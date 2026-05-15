@@ -189,3 +189,49 @@ class ProgramOptions:
         :return: String representation of options.
         """
         return f'ProgramOptions(command={ self.command }, contentType={ self.contentType }, dry={ self.dry }, logFile="{ self.logFile }")'
+
+class RemuxBackend(ABC):
+    """
+    Abstract base class for remuxing backends.
+    """
+
+    @abstractmethod
+    def parseProbeOutput(self, output: str) -> list[VideoStreamInfo]:
+        """
+        Parse the output of a probe command into a list of VideoStreamInfo objects.
+
+        :param output: Raw stdout from the probe command.
+        :return: List of VideoStreamInfo objects representing the streams.
+        """
+        pass
+
+    @abstractmethod
+    def compileProbeCommand(self, video: Video) -> list[str]:
+        """
+        Compile the command for probing the streams of the given video file.
+
+        :param video: Video object representing the video file to probe.
+        :return: List of command arguments for the probing tool.
+        """
+        pass
+
+    @abstractmethod
+    def compileStripCommand(self, video: Video, streamIdxToStrip: list[int]) -> list[str]:
+        """
+        Compile the command for stripping the specified streams from the given video.
+
+        :param video: Video object representing the input video file.
+        :param streamIdxToStrip: List of stream indices to strip from the video.
+        :return: List of command arguments for the stripping tool.
+        """
+        pass
+
+    @abstractmethod
+    def compileMuxCommand(self, media: Media) -> list[str]:
+        """
+        Compile the command for remuxing the given media.
+
+        :param media: Media object containing video and subtitles to remux.
+        :return: List of command arguments for the remuxing tool.
+        """
+        pass
