@@ -2,7 +2,9 @@ import sys
 import re as regex
 
 from muxkit.models import Media, Subtitle, Video, ProgramOptions, ContentType, Command
+from muxkit.backend import FFMpegBackend
 from muxkit.remux import Remuxer
+from muxkit.strip import Strip
 from muxkit.matcher import MediaMatcher, MediaMatcherFactory
 from muxkit.files import FileList, VideoFactory
 
@@ -125,7 +127,6 @@ def main():
 
     print(f'\n{ options.makeArgString() }\n')
 
-    remuxer: Remuxer = Remuxer(dry=options.dry, logFile=options.logFile)
 
     fileList: FileList = FileList.fromDirectory('.')
     mkvFiles: FileList = fileList.getFilesWithExtension('mkv')
@@ -135,57 +136,67 @@ def main():
     for mkv in mkvFiles.getFiles():
         print(f' - { mkv }')
 
-    print('SRT Files:')
-    for srt in srtFiles.getFiles():
-        print(f' - { srt }')
-
-    # Make Subtitle objects from the SRT files
-    subtitles: list[Subtitle] = []
-    for sub in srtFiles:
-        langInfo = determineLanguageFromFilename(sub)
-
-        # If language could be determined, create a Subtitle object
-        if langInfo is not None:
-            code, title = langInfo
-            subtitles.append(Subtitle(title=title, language=code, filename=sub, path=sub))
-            
-        # If language could not be determined ask the user
-        else:
-            print(f'Could not determine language for subtitle file:\n{ sub }')
-            langCode: str = input('Language code: ')
-            langTitle: str = input('Language title: ')
-            subtitles.append(Subtitle(title=langTitle, language=langCode, filename=sub, path=sub))
-
-    print('Subtitles:')
-    for sub in subtitles:
-        print(f' - {sub}')
-
     # Make Video objects from the MKV files
     videoFactory: VideoFactory = VideoFactory()
     videoList: list[Video] = videoFactory.fromFileList(mkvFiles)
     print('Videos:')
     [ print(video) for video in videoList ]
 
-    # Match videos with subtitles
-    mediaMatcher: MediaMatcher = MediaMatcherFactory.create(options)
-    mediaList: list[Media] = mediaMatcher.match(videoList, subtitles)
+    # If command is strip, run the stripping process
+    if options.command == Command.STRIP:
+        stripper: Strip = Strip(backend=FFMpegBackend(), videoFiles=videoList, options=options)
+        stripper.run()
 
-    # Print matched media
-    print('Matched Media:')
-    [ print(media) for media in mediaList ]
+    # If command is mux, run the remuxing process
+    else:
 
-    print('Do you want to proceed with remuxing? (y/N)')
-    proceed: str = input().strip().lower()
-    if proceed != 'y':
-        print('Aborting remuxing.')
-        return
+        print('SRT Files:')
+        for srt in srtFiles.getFiles():
+            print(f' - { srt }')
 
-    # Remux each media
-    for media in mediaList:
-        # Remux
-        remuxer.remux(media)
+        # Make Subtitle objects from the SRT files
+        subtitles: list[Subtitle] = []
+        for sub in srtFiles:
+            langInfo = determineLanguageFromFilename(sub)
 
-        # Notify done
-        print(f'{ media.video.filename } Done')
+            # If language could be determined, create a Subtitle object
+            if langInfo is not None:
+                code, title = langInfo
+                subtitles.append(Subtitle(title=title, language=code, filename=sub, path=sub))
+                
+            # If language could not be determined ask the user
+            else:
+                print(f'Could not determine language for subtitle file:\n{ sub }')
+                langCode: str = input('Language code: ')
+                langTitle: str = input('Language title: ')
+                subtitles.append(Subtitle(title=langTitle, language=langCode, filename=sub, path=sub))
 
-    print('Remuxing done')
+        print('Subtitles:')
+        for sub in subtitles:
+            print(f' - {sub}')
+
+        # Match videos with subtitles
+        mediaMatcher: MediaMatcher = MediaMatcherFactory.create(options)
+        mediaList: list[Media] = mediaMatcher.match(videoList, subtitles)
+
+        # Print matched media
+        print('Matched Media:')
+        [ print(media) for media in mediaList ]
+
+        print('Do you want to proceed with remuxing? (y/N)')
+        proceed: str = input().strip().lower()
+        if proceed != 'y':
+            print('Aborting remuxing.')
+            return
+
+        remuxer: Remuxer = Remuxer(dry=options.dry, logFile=options.logFile)
+
+        # Remux each media
+        for media in mediaList:
+            # Remux
+            remuxer.remux(media)
+
+            # Notify done
+            print(f'{ media.video.filename } Done')
+
+        print('Remuxing done')

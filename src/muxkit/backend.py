@@ -7,8 +7,20 @@ class FFMpegBackend(RemuxBackend):
     """
 
     FFMPEG_PROGRAM: str = 'ffmpeg'
+    FFPROBE_PROGRAM: str = 'ffprobe'
 
-    def compileCommand(self, media: Media) -> list[str]:
+    def parseProbeOutput(self, output: str) -> list[VideoStreamInfo]:
+        jsonOutput = json.loads(output)
+
+        return []
+
+    def compileProbeCommand(self, video: Video) -> list[str]:
+        return f'{ self.FFPROBE_PROGRAM } -show_streams -print_format json "{ video.path }"'.split()
+
+    def compileStripCommand(self, video: Video, streamIdxToStrip: list[int]) -> list[str]:
+        return []
+
+    def compileMuxCommand(self, media: Media) -> list[str]:
         """
         Compile the ffmpeg command for remuxing the given media.
 
@@ -50,3 +62,10 @@ class FFMpegBackend(RemuxBackend):
         command.append(media.getOutputFilename())
 
         return command
+    
+    def _parseFFProbeOutput(self) -> list[VideoStreamInfo]:
+        """
+        Create a list of VideoStreamInfo objects from ffprobe output.
+        """
+        return []
+
