@@ -1,4 +1,5 @@
 from __future__ import annotations
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 
@@ -100,6 +101,21 @@ class Media:
             { str(self.video) }
             { ', '.join(str(sub) for sub in self.subtitles) }
         '''
+
+@dataclass
+class VideoStreamInfo(ABC):
+    index: int
+
+@dataclass
+class AudioStreamInfo(VideoStreamInfo):
+    codec: str
+    language: str
+    size_bytes: int
+
+@dataclass
+class SubtitleStreamInfo(VideoStreamInfo):
+    language: str
+    size_bytes: int
 
 class Command(Enum):
     """
