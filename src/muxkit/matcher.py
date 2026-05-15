@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import re as regex
 from re import Pattern, Match
 
-from muxkit.models import Subtitle, Video, Media, ProgramOptions, ProgramMode
+from muxkit.models import Subtitle, Video, Media, ProgramOptions, ContentType
 
 class MediaMatcher(ABC):
     """
@@ -169,11 +169,11 @@ class MediaMatcherFactory:
         :param programOptions: ProgramOptions object containing the mode and other settings.
         :return: Corresponding MediaMatcher object.
         """
-        match programOptions.mode:
-            case ProgramMode.MOVIE:
+        match programOptions.contentType:
+            case ContentType.MOVIE:
                 return MovieMatcher()
 
-            case ProgramMode.TV_SHOW:
+            case ContentType.TV_SHOW:
                 return TVShowMatcher()
             
             case _:

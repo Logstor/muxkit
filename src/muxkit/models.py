@@ -101,30 +101,55 @@ class Media:
             { ', '.join(str(sub) for sub in self.subtitles) }
         '''
 
-class ProgramMode(Enum):
+class Command(Enum):
     """
-    Enum for program modes.
+    Enum for commands.
+    """
+    MUX = 'mux'
+    STRIP = 'strip'
+
+    @staticmethod
+    def fromString(value: str) -> Command:
+        """
+        Convert a string to a Command enum value.
+
+        :param value: String representation of the command.
+        :return: Corresponding Command enum value.
+        """
+        match value.lower():
+            case 'mux':
+                return Command.MUX
+            
+            case 'strip':
+                return Command.STRIP
+
+            case _:
+                raise ValueError(f'Invalid command: { value }. Expected "mux" or "strip".')
+
+class ContentType(Enum):
+    """
+    Enum for content types.
     """
     MOVIE = 'movie'
     TV_SHOW = 'show'
 
     @staticmethod
-    def fromString(value: str) -> ProgramMode:
+    def fromString(value: str) -> ContentType:
         """
-        Convert a string to a ProgramMode enum value.
+        Convert a string to a ContentType enum value.
 
-        :param value: String representation of the mode.
-        :return: Corresponding ProgramMode enum value.
+        :param value: String representation of the content type.
+        :return: Corresponding ContentType enum value.
         """
         match value.lower():
             case 'movie':
-                return ProgramMode.MOVIE
+                return ContentType.MOVIE
             
             case 'show':
-                return ProgramMode.TV_SHOW
+                return ContentType.TV_SHOW
 
             case _:
-                raise ValueError(f'Invalid mode: { value }. Expected "movie" or "show".')
+                raise ValueError(f'Invalid content type: { value }. Expected "movie" or "show".')
 
 @dataclass
 class ProgramOptions:
@@ -137,9 +162,14 @@ class ProgramOptions:
     If True, print help message and exit.
     """
 
-    mode: ProgramMode = ProgramMode.TV_SHOW
+    command: Command = Command.MUX
     """
-    Program mode, either MOVIE or TV_SHOW.
+    Command to execute.
+    """
+
+    contentType: ContentType = ContentType.TV_SHOW
+    """
+    Content type, either MOVIE or TV_SHOW.
     """
 
     dry: bool = False
@@ -158,4 +188,4 @@ class ProgramOptions:
 
         :return: String representation of options.
         """
-        return f'ProgramOptions(mode={ self.mode }, dry={ self.dry }, logFile="{ self.logFile }")'
+        return f'ProgramOptions(command={ self.command }, contentType={ self.contentType }, dry={ self.dry }, logFile="{ self.logFile }")'

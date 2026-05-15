@@ -1,7 +1,7 @@
 import sys
 import re as regex
 
-from muxkit.models import Media, Subtitle, Video, ProgramOptions, ProgramMode
+from muxkit.models import Media, Subtitle, Video, ProgramOptions, ContentType, Command
 from muxkit.remux import Remuxer
 from muxkit.matcher import MediaMatcher, MediaMatcherFactory
 from muxkit.files import FileList, VideoFactory
@@ -50,9 +50,12 @@ class ProgramArgsParser:
 
         :return: Help string.
         """
-        return '''Usage: remuxing.py [options] [--help]
+        return '''Usage: muxkit [command] [options] [--help]
+Command:
+    mux                 Remux video files with their corresponding subtitle files.
+    strip               Strip audio and subtitle tracks from video files.
 Options:
-    --mode <movie|show>   Set the program mode. Default is 'show'.
+    --type <movie|show>   Set the content type. Default is 'show'.
     --dry                 Perform a dry run without actual remuxing.
     --log <file>          Specify the log file path. Default is 'remux.log'.
     --help                Show this help message and exit.
@@ -66,25 +69,27 @@ Options:
         :param args: List of command line arguments (excluding program name).
         :return: ProgramOptions object with parsed options.
         """
+        # Guard against empty arguments
+        if not args or args[0] not in ['mux', 'strip']:
+            raise ValueError('No command provided. Expected "mux" or "strip". Use --help for usage information.')
+
+
         options: ProgramOptions = ProgramOptions()
 
-        i: int = 0
+        # First parse the command 
+        options.command = Command.fromString(args[0])
+
+        i: int = 1
         while i < len(args):
             arg: str = args[i]
 
             match arg:
-                case '--mode':
+                case '--type':
                     if i + 1 < len(args):
-                        modeStr: str = args[i + 1].lower()
-                        if modeStr == 'movie':
-                            options.mode = ProgramMode.MOVIE
-                        elif modeStr == 'show':
-                            options.mode = ProgramMode.TV_SHOW
-                        else:
-                            raise ValueError(f'Invalid mode: { modeStr }. Expected "movie" or "show".')
+                        options.contentType = ContentType.fromString(args[i + 1])
                         i += 2
                     else:
-                        raise ValueError('Expected mode after --mode')
+                        raise ValueError('Expected content type after --type')
 
                 case '--dry':
                     options.dry = True
