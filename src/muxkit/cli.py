@@ -169,7 +169,7 @@ def main():
     print('Matched Media:')
     [ print(media) for media in mediaList ]
 
-    print('Do you want to proceed with remuxing? (y/n)')
+    print('Do you want to proceed with remuxing? (y/N)')
     proceed: str = input().strip().lower()
     if proceed != 'y':
         print('Aborting remuxing.')
