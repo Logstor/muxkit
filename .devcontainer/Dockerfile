@@ -1,9 +1,11 @@
-FROM python:3.14.5-slim-trixie
+FROM archlinux@sha256:ceac417c19645d21630c120fa123942aa1fc5988faab14e67222013cb11f31bb
 
-RUN apt-get update
-
-# Install Git
-RUN apt-get install git -y
-
-# Upgrade PIP
-RUN pip install --upgrade pip
+RUN pacman -Syu --noconfirm \
+    git \
+    python \
+    python-pip \
+    python-build \
+    python-installer \
+    python-hatchling \
+    namcap \
+    shellcheck
