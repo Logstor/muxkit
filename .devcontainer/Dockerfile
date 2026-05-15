@@ -6,5 +6,6 @@ RUN pacman -Syu --noconfirm \
     python-pip \
     python-build \
     python-installer \
+    python-hatchling \
     namcap \
     shellcheck
