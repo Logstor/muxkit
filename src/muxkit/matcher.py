@@ -2,8 +2,7 @@ from abc import ABC, abstractmethod
 import re as regex
 from re import Pattern, Match
 
-from muxkit.models import Subtitle, Video, Media
-from muxkit.cli import ProgramOptions, ProgramMode
+from muxkit.models import Subtitle, Video, Media, ProgramOptions, ProgramMode
 
 class MediaMatcher(ABC):
     """

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 
 @dataclass
 class Subtitle:
@@ -98,3 +99,62 @@ class Media:
             { str(self.video) }
             { ', '.join(str(sub) for sub in self.subtitles) }
         '''
+
+class ProgramMode(Enum):
+    """
+    Enum for program modes.
+    """
+    MOVIE = 'movie'
+    TV_SHOW = 'show'
+
+    @staticmethod
+    def fromString(value: str) -> ProgramMode:
+        """
+        Convert a string to a ProgramMode enum value.
+
+        :param value: String representation of the mode.
+        :return: Corresponding ProgramMode enum value.
+        """
+        match value.lower():
+            case 'movie':
+                return ProgramMode.MOVIE
+            
+            case 'show':
+                return ProgramMode.TV_SHOW
+
+            case _:
+                raise ValueError(f'Invalid mode: { value }. Expected "movie" or "show".')
+
+@dataclass
+class ProgramOptions:
+    """
+    Class to hold program options, and parse command line arguments.
+    """
+
+    printHelp: bool = False
+    """
+    If True, print help message and exit.
+    """
+
+    mode: ProgramMode = ProgramMode.TV_SHOW
+    """
+    Program mode, either MOVIE or TV_SHOW.
+    """
+
+    dry: bool = False
+    """
+    If True, do not actually perform remuxing, just print commands.
+    """
+
+    logFile: str = 'remux.log'
+    """
+    Path to the log file.
+    """
+
+    def makeArgString(self) -> str:
+        """
+        Make a string representation of the current options for logging.
+
+        :return: String representation of options.
+        """
+        return f'ProgramOptions(mode={ self.mode }, dry={ self.dry }, logFile="{ self.logFile }")'
