@@ -1,21 +1,5 @@
-from abc import ABC, abstractmethod
-
-from muxkit.models import Media
-
-class RemuxBackend(ABC):
-    """
-    Abstract base class for remuxing backends.
-    """
-
-    @abstractmethod
-    def compileCommand(self, media: Media) -> list[str]:
-        """
-        Compile the command for remuxing the given media.
-
-        :param media: Media object containing video and subtitles to remux.
-        :return: List of command arguments for the remuxing tool.
-        """
-        pass
+import json
+from muxkit.models import RemuxBackend, Media, Video, VideoStreamInfo
 
 class FFMpegBackend(RemuxBackend):
     """
